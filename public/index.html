@@ -1197,62 +1197,22 @@
 }
 
         async function askLLM(userAction) {
-            try {
-                const prompt = `
-                    Игрок в фэнтези-мире снов. Мир волшебный, магический, полный тайн.
-                    Действие игрока: "${userAction}".
-                    
-                    Сгенерируй краткое, атмосферное описание происходящего (2-3 предложения).
-                    Затем предложи 3-4 конкретных варианта для дальнейших действий, пронумеровав их (1. ... 2. ... 3. ... 4. ...).
-                    
-                    Если действие связано с поиском предмета или взаимодействием с персонажем, опиши это.
-                    Сохраняй тон фэнтези и магии. Избегай современных терминов.
-                    Отвечай на русском языке.
-                `;
-
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-                const response = await fetch(LLM_API, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: 'local-model',
-                        messages: [
-                            {
-                                role: 'system',
-                                content: 'Ты мастер повествования в фэнтези-мире снов. Отвечай кратко, атмосферно и предлагай варианты действий.'
-                            },
-                            {
-                                role: 'user',
-                                content: prompt
-                            }
-                        ],
-                        temperature: 0.8,
-                        max_tokens: 500,
-                        stream: false
-                    }),
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`LLM API error: ${response.status} - ${errorText}`);
-                }
-
-                const data = await response.json();
-                return data.choices?.[0]?.message?.content || 'Нет ответа от нейросети.';
-
-            } catch (error) {
-                console.error('Ошибка запроса к LLM:', error);
-                throw error;
-            }
-        }
+  try {
+    // Простой fallback для тестирования
+    const fallbackResponses = [
+      `Вы "${userAction}" в мире снов. Что дальше? 1. Исследовать 2. Отдохнуть 3. Проверить инвентарь`,
+      `"${userAction}" - интересный выбор. Продолжайте: 1. Осмотреться вокруг 2. Идти вперед 3. Вернуться`,
+      `В мире снов: "${userAction.substring(0, 40)}..." Выберите действие: 1. Разгадать тайну 2. Собрать ресурсы 3. Сохранить игру`
+    ];
+    
+    const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+    return randomResponse;
+    
+  } catch (error) {
+    console.error('Ошибка запроса к LLM:', error);
+    return `Я временно недоступен. Но игра продолжается! Что вы хотите сделать?`;
+  }
+}
 
         async function generateImageForStory(story, userAction) {
             if (isGenerating) return;
@@ -2005,5 +1965,6 @@
 </body>
 
 </html>
+
 
 
