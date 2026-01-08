@@ -734,8 +734,8 @@
         // ========== КОНФИГУРАЦИЯ ==========
         // Для Vercel - используем относительные пути
         const API_BASE = window.location.origin;
-        const SD_API = API_BASE + '/api/sd-proxy';
-        const LLM_API = API_BASE + '/api/llm-proxy';
+        const SD_API = `${API_BASE}/api/sd-proxy`;
+        const LLM_API = `${API_BASE}/api/llm-proxy`;
         const HEALTH_API = API_BASE + '/api/health';
         
         console.log('Конфигурация API:', { SD_API, LLM_API });
@@ -1179,28 +1179,19 @@
         // ========== API ФУНКЦИИ ==========
         async function checkAPIConnection() {
   try {
-    // Проверяем health endpoint
     const response = await fetch('/api/health', {
       method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     });
     
     if (response.ok) {
-      try {
-        const data = await response.json();
-        console.log('API статус:', data);
-        return true;
-      } catch (jsonError) {
-        console.warn('Ответ не в формате JSON, но endpoint доступен');
-        return true;
-      }
+      const text = await response.text();
+      console.log('Health check response:', text.substring(0, 100));
+      return true;
     }
     return false;
   } catch (error) {
-    console.warn('Проверка API не удалась:', error);
+    console.warn('API check failed, using fallback:', error.message);
     return false;
   }
 }
@@ -2014,4 +2005,5 @@
 </body>
 
 </html>
+
 
